@@ -39,7 +39,14 @@ def test_with_column():
             'With-column makes a mutation.')
 
 def test_with_columns():
-    pass
+    new_df = fd.with_columns({
+        'a': lambda x: 1,
+        'c': lambda x: x.a + x.b
+        })(DF)
+    new_df.a.tolist() == [2, 3, 4, 5, 6], (
+            'With-columns does not change existing column.')
+    new_df.c.tolist() == [2, 4, 6, 6, 6], (
+            'With-columns does not change new column correctly.')
 
 def test_with_column_renamed():
     pass
@@ -47,7 +54,7 @@ def test_with_column_renamed():
 def test_with_columns_renamed():
     pass
 
-# def test_pipe():
+# def test_pipe_function():
     # pipe_results = fd.pipe(
             # df, [
             # fd.select(['a']),
@@ -55,3 +62,12 @@ def test_with_columns_renamed():
             # fd.with_column('c', lambda x: x.a + 1),
             # fd.with_column_renamed('a', 'A')
             # ])
+
+# def test_pipe_class():
+    # pipe_results = (
+        # fd.Pipe(DF)
+          # .select(['a'])
+          # .filter(lambda x: x.a % 2 == 0)
+          # .with_column('c', lambda x: x.a + 1)
+          # .with_column_renamed('a', 'A')
+          # .consume())
