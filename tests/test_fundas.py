@@ -27,7 +27,16 @@ def test_filter():
             'Filtered out wrong rows for diff column.')
 
 def test_with_column():
-    pass
+    assert (
+        fd.with_column('c', lambda x: x.a + x.b)(DF).c.tolist()
+        == [2, 4, 6, 6, 6]
+        ), 'With-column makes wrong new column.'
+    assert (
+        fd.with_column('a', lambda x: x.a**2)(DF).a.tolist()
+        == [1, 4, 9, 16, 25]
+        ), 'With-column makes wrong new column.'
+    assert DF.a.tolist() == [1, 2, 3, 4, 5], (
+            'With-column makes a mutation.')
 
 def test_with_columns():
     pass
