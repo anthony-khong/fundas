@@ -65,7 +65,13 @@ The intent is more clear, but there are still some pesky boilerplates.
 
 ### Functional Style
 
-Fundas' functional piping in pure Python is not great:
+Fundas' functional piping has the following pattern:
+
+```python
+fd.pipe(dataframe, list_of_transform_fns)
+```
+
+Unfortunately, in real applications, it does not look as clean:
 
 ```python
 new_dataframe = (
@@ -77,9 +83,9 @@ new_dataframe = (
     )
 ```
 
-There's a bit less boilerplate, but still somewhat clumsy. In contrast, we can have a more natural expression in Coconut:
+There's a bit less boilerplate, but still somewhat clumsy. In contrast, we can lose them completely in Coconut:
 
-```python
+```coconut
 new_dataframe = (
     dataframe_with_a_long_name
         |> filter(x -> (x.col_name % 2 == 0) & fd.between(x.col_name, 10, 60))
