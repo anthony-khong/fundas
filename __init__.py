@@ -1,10 +1,11 @@
 from fundas.functional_api import (
-    select
+    apply
     , filter
-    , with_column
-    , with_columns
-    , with_column_renamed
-    , with_columns_renamed
     , pipe
+    , select
+    , with_column
+    , with_column_renamed
+    , with_columns
+    , with_columns_renamed
     )
-from fundas.oo_api import Pipe
+from fundas.object_oriented_api import Pipe

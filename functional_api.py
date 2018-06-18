@@ -20,5 +20,11 @@ def with_column_renamed(old_column, new_column):
 def with_columns_renamed(old_new_pairs):
     return lambda df: df.rename(columns=old_new_pairs)
 
+def apply(fn):
+    return lambda df: fn(df)
+
+def join(right, on, how):
+    pass
+
 def pipe(df, stages):
     return reduce(lambda df_so_far, stage: stage(df_so_far), stages, df)

@@ -4,10 +4,7 @@ import pytest as pt
 import pandas as pd
 import fundas as fd
 
-DF = pd.DataFrame({
-    'a': [1, 2, 3, 4, 5],
-    'b': [1, 2, 3, 2, 1]
-    })
+DF = pd.DataFrame({'a': [1, 2, 3, 4, 5], 'b': [1, 2, 3, 2, 1]})
 
 def test_select():
     assert fd.select(['a'])(DF).columns == ['a'], (
@@ -89,9 +86,24 @@ def test_pipe():
     assert piped_df.equals(other_piped_df), 'Pipe class does not work.'
 
 def test_pipe_with_pandas_method():
+    df_dict = fd.apply(lambda x: x.to_dict())(DF)
+    assert df_dict == DF.to_dict(), 'Apply function does not apply correctly.'
+    df_with_nulls = DF.assign(c=[np.nan, np.nan, 1, 2, 3])
+    isnulls = fd.apply(lambda x: x.c.isnull().tolist())(df_with_nulls)
+    assert isnulls == [True, True, False, False, False], (
+            'Apply function does not apply correctly.')
+
+def test_default_join():
+    other_df = pd.DataFrame({'a': [5, 2, 3, 4, 1], 'c': [5, 4, 3, 2, 1]})
+    joined_c = fd.join(other_df, ['a'], 'inner')(DF).c.tolist()
+    assert joined_c == [1, 4, 3, 2, 5], 'Default join is incorrect.'
+    # TODO: join with lambda
+# TODO: test other types of joins
+
+def test_map():
     pass
 
-def test_join():
+def test_flat_map():
     pass
 
 def test_drop():

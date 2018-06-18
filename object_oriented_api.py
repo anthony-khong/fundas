@@ -12,7 +12,8 @@ class Pipe(object):
     def __getattribute__(self, name):
         if hasattr(fa, name):
             def fn_to_pipe(*args, **kwargs):
-                return Pipe(getattr(fa, name)(*args, **kwargs)(self.dataframe))
+                xform_fn = getattr(fa, name)(*args, **kwargs)
+                return Pipe(xform_fn(self.dataframe))
             return fn_to_pipe
         else:
             return super().__getattribute__(name)
