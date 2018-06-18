@@ -49,25 +49,56 @@ def test_with_columns():
             'With-columns does not change new column correctly.')
 
 def test_with_column_renamed():
-    pass
+    renamed_df = fd.with_column_renamed('a', 'c')(DF)
+    with pt.raises(KeyError):
+        renamed_df['a']
+    assert renamed_df.c.tolist() == DF.a.tolist(), (
+            'With-column-renamed mutates original values.')
 
 def test_with_columns_renamed():
+    renamed_df = fd.with_columns_renamed({'a': 'A', 'b': 'B'})(DF)
+    assert set(renamed_df) == {'A', 'B'}, (
+            'With-columns-renamed do not rename correctly.')
+    assert set(DF) == {'a', 'b'}, (
+            'With-columns-renamed mutates original columns.')
+
+def test_pipe():
+    piped_df = fd.pipe(
+            DF, [
+            fd.filter(lambda x: x.a % 2 == 0),
+            fd.with_column('c', lambda x: x.a + 1),
+            fd.with_column_renamed('a', 'A'),
+            fd.with_column('d', lambda x: x.A ** 2),
+            fd.select(['A', 'b', 'c'])
+            ])
+    assert (
+        (piped_df.A.tolist() == [2, 4])
+        & (piped_df.c.tolist() == [3, 5])
+        & (piped_df.b.tolist() == [2, 2])
+        & (set(piped_df) == {'A', 'b', 'c'})
+        ), 'Mistakes in piping.'
+
+    other_piped_df = (
+        fd.Pipe(DF)
+          .filter(lambda x: x.a % 2 == 0)
+          .with_column('c', lambda x: x.a + 1)
+          .with_column_renamed('a', 'A')
+          .with_column('d', lambda x: x.A ** 2)
+          .select(['A', 'b', 'c'])
+          .to_df())
+    assert piped_df.equals(other_piped_df), 'Pipe class does not work.'
+
+def test_pipe_with_pandas_method():
     pass
 
-# def test_pipe_function():
-    # pipe_results = fd.pipe(
-            # df, [
-            # fd.select(['a']),
-            # fd.filter(lambda x: x.a % 2 == 0),
-            # fd.with_column('c', lambda x: x.a + 1),
-            # fd.with_column_renamed('a', 'A')
-            # ])
+def test_join():
+    pass
 
-# def test_pipe_class():
-    # pipe_results = (
-        # fd.Pipe(DF)
-          # .select(['a'])
-          # .filter(lambda x: x.a % 2 == 0)
-          # .with_column('c', lambda x: x.a + 1)
-          # .with_column_renamed('a', 'A')
-          # .consume())
+def test_drop():
+    pass
+
+def test_groupby_agg():
+    pass
+
+def test_order_by():
+    pass
