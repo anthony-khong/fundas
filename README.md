@@ -76,9 +76,9 @@ Unfortunately, in real applications, it does not look as clean:
 ```python
 new_dataframe = (
     fd.pipe(dataframe_with_a_long_name, [
-        filter(lambda x: (x.col_name % 2 == 0) & fd.between(x.col_name, 10, 60)),
-        select(col_name0, col_name1, col_name3),
-        join(other_dataframe, col_name0, 'inner')
+        fd.filter(lambda x: (x.col_name % 2 == 0) & fd.between(x.col_name, 10, 60)),
+        fd.select(col_name0, col_name1, col_name3),
+        fd.join(other_dataframe, col_name0, 'inner')
         ])
     )
 ```
@@ -88,8 +88,8 @@ There's a bit less boilerplate, but still somewhat clumsy. In contrast, we can l
 ```coconut
 new_dataframe = (
     dataframe_with_a_long_name
-        |> filter(x -> (x.col_name % 2 == 0) & fd.between(x.col_name, 10, 60))
-        |> select(col_name0, col_name1, col_name3)
-        |> join(other_dataframe, col_name0, 'inner')
+        |> fd.filter(x -> (x.col_name % 2 == 0) & fd.between(x.col_name, 10, 60))
+        |> fd.select(col_name0, col_name1, col_name3)
+        |> fd.join(other_dataframe, col_name0, 'inner')
     )
 ```
