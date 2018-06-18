@@ -4,7 +4,7 @@ Pandas has its own quirks and peculiarities. It ranges from not having a `filter
 
 ## Forward Piping
 
-Pandas often incentivises us to have short names for dataframes. For instance, no one in their right mind would right something like this:
+Pandas often incentivises us to have short names for dataframes. For instance, no one in their right mind would write something like this:
 
 ```python
 new_dataframe = dataframe_with_a_long_name[
@@ -14,7 +14,7 @@ new_dataframe = dataframe_with_a_long_name[
     ][[col_name0, col_name1, col_name3]].merge(other_dataframe, 'inner', [col_name0])
 ```
 
-We are only doing very basic operations, but the intent is clearly lost in the syntax. It's extremely tempting to replace the name with the less informative `df`, shorten a commonly used column and declare intermidiate variables as such:
+We are only doing very basic operations, but the intent is lost in the syntax. It's extremely tempting to replace the name with the less informative `df`, shorten a commonly used column to `col` and declare intermidiate variables as such:
 
 ```python
 select_ix = (df.col % 2 == 0) & (df.col <= 10) & (df.col >= 60)
@@ -33,7 +33,7 @@ val newDataFrame = {
 }
 ```
 
-Unlike the Pandas code, the Spark code is concise, descriptive and has clear intent. To alleviate this problem, Fundas has two styles for forward piping: functional and object-oriented. It is more natural to use object-oriented piping in pure Python and functional piping in Coconut.
+Unlike the Pandas code, the Spark code is concise, descriptive and with clear intent. To address this problem, Fundas has two styles for forward piping: functional and object-oriented. It is more natural to use object-oriented piping in pure Python and functional piping in Coconut.
 
 In all subsequent examples, we `import fundas as fd`.
 
@@ -87,5 +87,3 @@ new_dataframe = (
         |> join(other_dataframe, col_name0, 'inner')
     )
 ```
-
-## Transform Functions
