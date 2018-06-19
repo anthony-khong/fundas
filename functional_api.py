@@ -6,6 +6,7 @@ def select(columns):
 
 def filter(predicate):
     return lambda df: df[predicate(df)].reset_index()
+where = filter
 
 def with_column(new_column, column_fn):
     return lambda df: df.assign(**{new_column: column_fn(df)})
@@ -24,7 +25,7 @@ def apply(fn):
     return lambda df: fn(df)
 
 def join(right, on, how):
-    pass
+    return lambda df: df.merge(right, on=on, how=how)
 
 def pipe(df, stages):
     return reduce(lambda df_so_far, stage: stage(df_so_far), stages, df)

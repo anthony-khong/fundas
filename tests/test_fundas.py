@@ -23,6 +23,10 @@ def test_filter():
     assert filtered.b.tolist() == [1, 3, 1], (
             'Filtered out wrong rows for diff column.')
 
+def test_between():
+    filtered = fd.filter(lambda x: fd.between(x.b, 2, 3))(DF)
+    assert filtered.a.tolist() == [2, 3, 4], 'Between function not correct.'
+
 def test_with_column():
     assert (
         fd.with_column('c', lambda x: x.a + x.b)(DF).c.tolist()
@@ -97,8 +101,6 @@ def test_default_join():
     other_df = pd.DataFrame({'a': [5, 2, 3, 4, 1], 'c': [5, 4, 3, 2, 1]})
     joined_c = fd.join(other_df, ['a'], 'inner')(DF).c.tolist()
     assert joined_c == [1, 4, 3, 2, 5], 'Default join is incorrect.'
-    # TODO: join with lambda
-# TODO: test other types of joins
 
 def test_map():
     pass

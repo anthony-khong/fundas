@@ -1,6 +1,7 @@
 from fundas.functional_api import (
     apply
     , filter
+    , join
     , pipe
     , select
     , with_column
@@ -9,3 +10,4 @@ from fundas.functional_api import (
     , with_columns_renamed
     )
 from fundas.object_oriented_api import Pipe
+from fundas.utilities import between
