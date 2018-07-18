@@ -1,8 +1,8 @@
 from functools import reduce
 
-def select(columns):
+def select(*columns):
     columns = [columns] if isinstance(columns, str) else columns
-    return lambda df: df[columns]
+    return lambda df: df[list(columns)]
 
 def filter(predicate):
     return lambda df: df[predicate(df)].reset_index()
@@ -29,3 +29,6 @@ def join(right, on, how):
 
 def pipe(df, stages):
     return reduce(lambda df_so_far, stage: stage(df_so_far), stages, df)
+
+def drop_columns(*columns):
+    return lambda df: df.drop(columns=list(columns))

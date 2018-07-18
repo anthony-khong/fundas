@@ -1,6 +1,7 @@
 from fundas.functional_api import (
     apply
     , filter
+    , drop_columns
     , join
     , pipe
     , select

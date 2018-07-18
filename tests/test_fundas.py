@@ -7,10 +7,12 @@ import fundas as fd
 DF = pd.DataFrame({'a': [1, 2, 3, 4, 5], 'b': [1, 2, 3, 2, 1]})
 
 def test_select():
-    assert fd.select(['a'])(DF).columns == ['a'], (
-            'Selected wrong column from a list')
+    assert fd.select('a')(DF).columns == ['a'], (
+            'Selected wrong column from a list.')
     assert fd.select('b')(DF).columns == ['b'], (
-            'Selected wrong column from a string')
+            'Selected wrong column from a string.')
+    assert list(fd.select('b', 'a')(DF).columns) == ['b', 'a'], (
+            'Select multiple columns did not work.')
     with pt.raises(KeyError):
         fd.select('c')(DF)
 
@@ -70,7 +72,7 @@ def test_pipe():
             fd.with_column('c', lambda x: x.a + 1),
             fd.with_column_renamed('a', 'A'),
             fd.with_column('d', lambda x: x.A ** 2),
-            fd.select(['A', 'b', 'c'])
+            fd.select('A', 'b', 'c')
             ])
     assert (
         (piped_df.A.tolist() == [2, 4])
@@ -85,7 +87,7 @@ def test_pipe():
           .with_column('c', lambda x: x.a + 1)
           .with_column_renamed('a', 'A')
           .with_column('d', lambda x: x.A ** 2)
-          .select(['A', 'b', 'c'])
+          .select('A', 'b', 'c')
           .to_df())
     assert piped_df.equals(other_piped_df), 'Pipe class does not work.'
 
@@ -101,6 +103,13 @@ def test_default_join():
     other_df = pd.DataFrame({'a': [5, 2, 3, 4, 1], 'c': [5, 4, 3, 2, 1]})
     joined_c = fd.join(other_df, ['a'], 'inner')(DF).c.tolist()
     assert joined_c == [1, 4, 3, 2, 5], 'Default join is incorrect.'
+
+def test_drop_columns():
+    for col_to_drop in ['a', 'b']:
+        assert 'b' not in fd.drop_columns('b')(DF), (
+            'drop_columns does not work for single column.')
+    assert len(fd.drop_columns('a', 'b')(DF).columns) == 0, (
+        'drop_columns does not work for multiple columns.')
 
 def test_map():
     pass
