@@ -1,8 +1,10 @@
 from fundas.functional_api import (
     apply
     , filter
+    , groupby_agg
     , drop_columns
     , join
+    , order_by
     , pipe
     , select
     , with_column

@@ -17,4 +17,3 @@ class Pipe(object):
             return fn_to_pipe
         else:
             return super().__getattribute__(name)
-

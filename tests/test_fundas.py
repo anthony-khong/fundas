@@ -8,26 +8,22 @@ DF = pd.DataFrame({'a': [1, 2, 3, 4, 5], 'b': [1, 2, 3, 2, 1]})
 
 def test_select():
     assert fd.select('a')(DF).columns == ['a'], (
-            'Selected wrong column from a list.')
+        'Selected wrong column from a list.')
     assert fd.select('b')(DF).columns == ['b'], (
-            'Selected wrong column from a string.')
+        'Selected wrong column from a string.')
     assert list(fd.select('b', 'a')(DF).columns) == ['b', 'a'], (
-            'Select multiple columns did not work.')
+        'Select multiple columns did not work.')
     with pt.raises(KeyError):
         fd.select('c')(DF)
 
 def test_filter():
     filtered = fd.filter(lambda x: x.a % 2 != 0)(DF)
     assert np.all(filtered.index == np.arange(len(filtered))), (
-            'Filter messed up DataFrame index.')
+        'Filter messed up DataFrame index.')
     assert filtered.a.tolist() == [1, 3, 5], (
-            'Filtered out wrong rows for same column.')
+        'Filtered out wrong rows for same column.')
     assert filtered.b.tolist() == [1, 3, 1], (
-            'Filtered out wrong rows for diff column.')
-
-def test_between():
-    filtered = fd.filter(lambda x: fd.between(x.b, 2, 3))(DF)
-    assert filtered.a.tolist() == [2, 3, 4], 'Between function not correct.'
+        'Filtered out wrong rows for diff column.')
 
 def test_with_column():
     assert (
@@ -39,7 +35,7 @@ def test_with_column():
         == [1, 4, 9, 16, 25]
         ), 'With-column makes wrong new column.'
     assert DF.a.tolist() == [1, 2, 3, 4, 5], (
-            'With-column makes a mutation.')
+        'With-column makes a mutation.')
 
 def test_with_columns():
     new_df = fd.with_columns({
@@ -47,23 +43,23 @@ def test_with_columns():
         'c': lambda x: x.a + x.b
         })(DF)
     new_df.a.tolist() == [2, 3, 4, 5, 6], (
-            'With-columns does not change existing column.')
+        'With-columns does not change existing column.')
     new_df.c.tolist() == [2, 4, 6, 6, 6], (
-            'With-columns does not change new column correctly.')
+        'With-columns does not change new column correctly.')
 
 def test_with_column_renamed():
     renamed_df = fd.with_column_renamed('a', 'c')(DF)
     with pt.raises(KeyError):
         renamed_df['a']
     assert renamed_df.c.tolist() == DF.a.tolist(), (
-            'With-column-renamed mutates original values.')
+        'With-column-renamed mutates original values.')
 
 def test_with_columns_renamed():
     renamed_df = fd.with_columns_renamed({'a': 'A', 'b': 'B'})(DF)
     assert set(renamed_df) == {'A', 'B'}, (
-            'With-columns-renamed do not rename correctly.')
+        'With-columns-renamed do not rename correctly.')
     assert set(DF) == {'a', 'b'}, (
-            'With-columns-renamed mutates original columns.')
+        'With-columns-renamed mutates original columns.')
 
 def test_pipe():
     piped_df = fd.pipe(
@@ -97,7 +93,7 @@ def test_pipe_with_pandas_method():
     df_with_nulls = DF.assign(c=[np.nan, np.nan, 1, 2, 3])
     isnulls = fd.apply(lambda x: x.c.isnull().tolist())(df_with_nulls)
     assert isnulls == [True, True, False, False, False], (
-            'Apply function does not apply correctly.')
+        'Apply function does not apply correctly.')
 
 def test_default_join():
     other_df = pd.DataFrame({'a': [5, 2, 3, 4, 1], 'c': [5, 4, 3, 2, 1]})
@@ -111,17 +107,25 @@ def test_drop_columns():
     assert len(fd.drop_columns('a', 'b')(DF).columns) == 0, (
         'drop_columns does not work for multiple columns.')
 
-def test_map():
-    pass
-
-def test_flat_map():
-    pass
-
-def test_drop():
-    pass
-
 def test_groupby_agg():
-    pass
+    aggregated = fd.groupby_agg(
+        by='b',
+        aggregators={
+            'sum_a': lambda x: x.a.sum(),
+            'std_a': lambda x: x.a.std(),
+            'max_b': lambda x: x.b.max()
+        })(DF)
+    expected_columns = ['sum_a', 'std_a', 'max_b', 'b']
+    assert all(x in aggregated for x in expected_columns), (
+        'Aggregated DF do not have expected columns.')
+
+    with pt.raises(ValueError):
+        aggregated = fd.groupby_agg('b', {'a': lambda x: [1]})(DF)
 
 def test_order_by():
-    pass
+    ordered = fd.order_by('b')(DF)
+    assert ordered.b.tolist() == [1, 1, 2, 2, 3], (
+        'Order-by does not order columns properly.')
+    ordered_desc = fd.order_by('b', desc=True)(DF)
+    assert ordered.b.tolist() == ordered_desc.b.tolist()[::-1], (
+        'Order-by descending does not order columns properly.')

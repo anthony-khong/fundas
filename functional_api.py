@@ -1,12 +1,14 @@
 from functools import reduce
 
+import numpy as np
+import pandas as pd
+
 def select(*columns):
     columns = [columns] if isinstance(columns, str) else columns
     return lambda df: df[list(columns)]
 
 def filter(predicate):
     return lambda df: df[predicate(df)].reset_index()
-where = filter
 
 def with_column(new_column, column_fn):
     return lambda df: df.assign(**{new_column: column_fn(df)})
@@ -32,3 +34,21 @@ def pipe(df, stages):
 
 def drop_columns(*columns):
     return lambda df: df.drop(columns=list(columns))
+
+def groupby_agg(by, aggregators):
+    apply = lambda grouped: pd.Series({
+        column: _ensure_scalar_return(agg_fn)(grouped)
+        for column, agg_fn in aggregators.items()
+        })
+    return lambda df: df.groupby(by).apply(apply).reset_index()
+
+def _ensure_scalar_return(fn):
+    def wrapped(*args, **kwargs):
+        out = fn(*args, **kwargs)
+        if not np.isscalar(out):
+            raise ValueError('Expected a scalar return.')
+        return out
+    return wrapped
+
+def order_by(by, desc=False):
+    return lambda df: df.sort_values(by=by, ascending=not desc).reset_index()
