@@ -1,6 +1,5 @@
 from functools import reduce
 
-import numpy as np
 import pandas as pd
 
 def select(*columns):
@@ -37,18 +36,12 @@ def drop_columns(*columns):
 
 def groupby_agg(by, aggregators):
     apply = lambda grouped: pd.Series({
-        column: _ensure_scalar_return(agg_fn)(grouped)
+        column: agg_fn(grouped)
         for column, agg_fn in aggregators.items()
         })
     return lambda df: df.groupby(by).apply(apply).reset_index()
 
-def _ensure_scalar_return(fn):
-    def wrapped(*args, **kwargs):
-        out = fn(*args, **kwargs)
-        if not np.isscalar(out):
-            raise ValueError('Expected a scalar return.')
-        return out
-    return wrapped
+# TODO: def groupby_apply
 
 def order_by(by, desc=False):
     return lambda df: df.sort_values(by=by, ascending=not desc).reset_index()

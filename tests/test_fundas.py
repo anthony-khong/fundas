@@ -119,9 +119,6 @@ def test_groupby_agg():
     assert all(x in aggregated for x in expected_columns), (
         'Aggregated DF do not have expected columns.')
 
-    with pt.raises(ValueError):
-        aggregated = fd.groupby_agg('b', {'a': lambda x: [1]})(DF)
-
 def test_order_by():
     ordered = fd.order_by('b')(DF)
     assert ordered.b.tolist() == [1, 1, 2, 2, 3], (
